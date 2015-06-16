@@ -33,25 +33,25 @@ commitCat.view = function() {
         ]),
         m("body", [
             m("div", {class: "container"},[
-                m("h1", "CommitCat"),
-                m("p","Timegraphing repo commits by hour")
+                m("h3", {class: "center-align"}, "CommitCat"),
+                m("p", {class: "center-align" }, "Timegraphing repo commits by hour")
             ]),
-            m("div", {class: "container z-depth-2"},[
+            m("div", {id: "form", class: "container z-depth-2 center-align"},[
                 m("form", [
                     m("div", {class: "row"}, [
                         m("div", {class: "input-field"}, [
                             m("input", {onchange: m.withAttr("value", commitCat.vm.user), class: "validate", placeholder: commitCat.vm.user(), type: "text", id: "username"}),
-                            m("label", {for: "username"}, "Username")
+                            m("label", {for: "username"}, "Username"),
                         ]),
                     m("div", {class: "input-field"}, [
                         m("input", {onchange: m.withAttr("value", commitCat.vm.repo), placeholder: commitCat.vm.repo(), type: "text", id: "repo"}),
-                        m("label", {for: "repo"}, "Repo")
+                        m("label", {for: "repo"}, "Repo"),
                     ]),
                     ]),
-                    m("a", {onclick: getDataAndBuild, class: "waves-effect waves-light btn"}, "MEOW")
+                    m("a", {onclick: getDataAndBuild, class: "waves-effect waves-light btn"}, "MEOW"),
                 ]),
             ]),
-            m("div", {class: "catHead"}),
+            m("div", {class: "catHead center-align"}),
         ])
     ]);
 };
@@ -77,9 +77,6 @@ function getGitData() {
                 "/",
                 commitCat.vm.repo(),
                 "/stats/punch_card",
-                "?",
-                "access_token=",
-                "e41c274435d26c3a4d4f20efe51289f8471e18d1"
             ].join("")
         }
     );
@@ -94,7 +91,8 @@ function getDataAndBuild() {
         var sortedTimeObjects = sortTimeObjects(timeObjects);
         data = timeObjects;
         makeGraph();
-    });
+    })
+    .fail(console.log("getting git failed"));
 }
 
 function makeTimehash(timeArray) {

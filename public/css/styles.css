@@ -2,7 +2,18 @@ input {
   margin: 15px;
 }
 
+#form {
+  padding: 20px;
+  width: 250px;
+}
+
 .container {
-  padding: 30px;
-  width: 400px;
+}
+
+h3 {
+  font-style: italic;
+}
+
+p {
+  font-style: bold;
 }
