@@ -1,19 +1,14 @@
 var commitCat = {};
 
 commitCat.repo = function(data) {
-    this.description = m.prop(data.description);
+    this.user = m.prop(data.description);
 };
 
 commitCat.vm = (function() {
     var vm = {};
     vm.init = function() {
-        vm.description = m.prop("Please enter a Github repo");
-
-        vm.add = function() {
-            if (vm.description()) {
-                new commitCat.repo({description: vm.description()});
-            }
-        };
+        vm.user = m.prop("Please enter a Github user");
+        vm.repo = m.prop("Please enter a Github repo");
     };
     return vm;
 }());
@@ -32,20 +27,15 @@ commitCat.view = function() {
         m("body", [
             m("h1", "CommitCat"),
             m("p","Timegraphing repo commits by hour"),
-            m("input", {onchange: m.withAttr("value", commitCat.vm.description), value: commitCat.vm.description()}),
-            m("a", {onclick: makeGraph, class: "waves-effect waves-light btn"}, "Add"),
+            m("input", {onchange: m.withAttr("value", commitCat.vm.user), value: commitCat.vm.user()}),
+            m("input", {onchange: m.withAttr("value", commitCat.vm.repo), value: commitCat.vm.repo()}),
+            m("a", {onclick: getDataAndBuild, class: "waves-effect waves-light btn"}, "Add"),
             m("div", {class: "arc"}),
         ])
     ]);
 };
 
 m.mount(document, {controller: commitCat.controller, view: commitCat.view});
-
-var data = [ {name: "one", value: 10375},
-    {name: "two", value:  7615},
-{name: "three", value:  832},
-{name: "four", value:  516},
-{name: "five", value:  491} ];
 
 var margin = {top: 20, right: 20, bottom: 20, left: 20};
 width = 400 - margin.left - margin.right;
@@ -73,25 +63,78 @@ var pie = d3.layout.pie()
 .endAngle(3.1*Math.PI)
 .value(function(d) { return d.value; });
 
-function makeGraph() {
-    console.log("graph made");
-    m.request({method: "GET", url: "https://api.github.com/repos/kpearson/octochat/stats/punch_card"})
-    .then(function (success) {
-        console.log(success);
-    });
-    var g = chart.selectAll(".arc")
-    .data(pie(data))
-    .enter().append("g")
-    .attr("class", "arc");
+var humanTime = [
+    "12AM",
+    "1AM",
+    "2AM",
+    "3AM",
+    "4AM",
+    "5AM",
+    "6AM",
+    "7AM",
+    "8AM",
+    "9AM",
+    "10AM",
+    "11AM",
+    "12PM",
+    "1PM",
+    "2PM",
+    "3PM",
+    "4PM",
+    "5PM",
+    "6PM",
+    "7PM",
+    "8PM",
+    "9PM",
+    "10PM",
+    "11PM"
+];
 
-    g.append("path")
-    .style("fill", function(d) { return color(d.data.name); })
-    .transition().delay(function(d, i) { return i * 500; }).duration(500)
-    .attrTween('d', function(d) {
-        var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
-        return function(t) {
-            d.endAngle = i(t);
-            return arc(d);
-        };
+function filterNoCommits(arr) {
+    filtered = arr.filter(function(a){
+        if (a[2] !== 0) {
+            return a;
+        }
     });
+    return filtered;
 }
+
+var data = [
+    {name: "one", value: 10375},
+    {name: "two", value:  7615},
+    {name: "three", value:  832},
+    {name: "four", value:  516},
+    {name: "five", value:  491} ];
+
+    function getGitData() {
+        console.log(commitCat.vm.user());
+        console.log(commitCat.vm.repo());
+        return m.request({method: "GET", url: "https://api.github.com/repos/kpearson/octochat/stats/punch_card"});
+    }
+
+    function getDataAndBuild() {
+        getGitData()
+        .then(function(data) {
+            data = filterNoCommits(data);
+            makeGraph();
+        });
+    }
+
+    function makeGraph() {
+        console.log("graph made");
+        var g = chart.selectAll(".arc")
+        .data(pie(data))
+        .enter().append("g")
+        .attr("class", "arc");
+
+        g.append("path")
+        .style("fill", function(d) { return color(d.data.name); })
+        .transition().delay(function(d, i) { return i * 500; }).duration(500)
+        .attrTween('d', function(d) {
+            var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
+            return function(t) {
+                d.endAngle = i(t);
+                return arc(d);
+            };
+        });
+    }
