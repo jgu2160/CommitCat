@@ -1,26 +1,17 @@
 var commitCat = {};
 
-//for simplicity, we use this component to namespace the model classes
-
-//the Todo class has two properties
-commitCat.Todo = function(data) {
+commitCat.repo = function(data) {
     this.description = m.prop(data.description);
-    this.done = m.prop(false);
 };
-
-commitCat.TodoList = Array;
 
 commitCat.vm = (function() {
     var vm = {};
     vm.init = function() {
-        vm.list = new commitCat.TodoList();
-
-        vm.description = m.prop("Please enter a Github username");
+        vm.description = m.prop("Please enter a Github repo");
 
         vm.add = function() {
             if (vm.description()) {
-                vm.list.push(new todo.Todo({description: vm.description()}));
-                vm.description("");
+                new commitCat.repo({description: vm.description()});
             }
         };
     };
@@ -34,26 +25,16 @@ commitCat.controller = function() {
 commitCat.view = function() {
     return m("html", [
         m("head", [
-            m("title", "Todo"),
+            m("title", "CommitCat"),
             m("link[href='./public/css/materialize.css'][rel=stylesheet]"),
             m("link[href='./public/css/styles.css'][rel=stylesheet]")
         ]),
         m("body", [
             m("h1", "CommitCat"),
-            m("p","Timegraphing your commits since 3 months ago"),
+            m("p","Timegraphing repo commits by hour"),
             m("input", {onchange: m.withAttr("value", commitCat.vm.description), value: commitCat.vm.description()}),
             m("a", {onclick: makeGraph, class: "waves-effect waves-light btn"}, "Add"),
             m("div", {class: "arc"}),
-            m("table", [
-                commitCat.vm.list.map(function(task, index) {
-                    return m("tr", [
-                        m("td", [
-                            m("input[type=checkbox]", {onclick: m.withAttr("checked", task.done), checked: task.done(), class: "filled-in"})
-                        ]),
-                        m("td", {style: {textDecoration: task.done() ? "line-through" : "none"}}, task.description()),
-                    ]);
-                })
-            ])
         ])
     ]);
 };
@@ -94,6 +75,10 @@ var pie = d3.layout.pie()
 
 function makeGraph() {
     console.log("graph made");
+    m.request({method: "GET", url: "https://api.github.com/repos/kpearson/octochat/stats/punch_card"})
+    .then(function (success) {
+        console.log(success);
+    });
     var g = chart.selectAll(".arc")
     .data(pie(data))
     .enter().append("g")
