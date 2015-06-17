@@ -9,12 +9,8 @@ commitCat.repo = function(data) {
 commitCat.vm = (function() {
     var vm = {};
     vm.init = function() {
-        //vm.user = m.prop("jgu2160");
-        //vm.repo = m.prop("CommitCat");
-        vm.user = m.prop("kpearson");
-        vm.repo = m.prop("track_fund");
-        //vm.user = m.prop("");
-        //vm.repo = m.prop("");
+        vm.user = m.prop("apcera");
+        vm.repo = m.prop("gnatsd");
     };
     return vm;
 }());
@@ -31,16 +27,16 @@ commitCat.view = function() {
             m("link[href='./public/css/materialize.css'][rel=stylesheet]"),
             m("link[href='./public/css/styles.css'][rel=stylesheet]")
         ]),
-        m("body", [
+        m("body", {class: "cyan lighten-4"}, [
             m("div", {class: "container"},[
-                m("h3", {class: "center-align"}, "CommitCat"),
-                m("p", {class: "center-align" }, "Timegraphing repo commits by hour")
+                m("h1", {class: "center-align", id:"title"}, "CommitCat"),
+                m("p", {class: "center-align", id:"blurb" }, "Timegraphing repo commits by hour")
             ]),
-            m("div", {id: "form", class: "container z-depth-2 center-align"},[
+            m("div", {id: "form", class: "cyan lighten-5 container z-depth-2 center-align"},[
                 m("form", [
                     m("div", {class: "row"}, [
                         m("div", {class: "input-field"}, [
-                            m("input", {onchange: m.withAttr("value", commitCat.vm.user), class: "validate", placeholder: commitCat.vm.user(), type: "text", id: "username"}),
+                            m("input", {onchange: m.withAttr("value", commitCat.vm.user), placeholder: commitCat.vm.user(), type: "text", id: "username"}),
                             m("label", {for: "username"}, "Username"),
                         ]),
                     m("div", {class: "input-field"}, [
@@ -48,10 +44,10 @@ commitCat.view = function() {
                         m("label", {for: "repo"}, "Repo"),
                     ]),
                     ]),
-                    m("a", {onclick: getDataAndBuild, class: "waves-effect waves-light btn"}, "MEOW"),
+                    m("a", {onclick: getDataAndBuild, class: "cyan darken-1 waves-effect waves-light btn"}, "MEOW"),
                 ]),
             ]),
-            m("div", {class: "catHead center-align"}),
+            m("div", {class: "graph center-align"}),
         ])
     ]);
 };
@@ -87,12 +83,12 @@ function getDataAndBuild() {
     .then(function(success) {
         success = filterNoCommits(success);
         var timeHash = makeTimehash(success);
+        setColor(timeHash);
         var timeObjects = makeTimeObjects(timeHash);
         var sortedTimeObjects = sortTimeObjects(timeObjects);
         data = timeObjects;
         makeGraph();
-    })
-    .fail(console.log("getting git failed"));
+    });
 }
 
 function makeTimehash(timeArray) {
@@ -107,6 +103,8 @@ function makeTimehash(timeArray) {
     });
     return timeHash;
 }
+
+var maxValue = 0;
 
 function makeTimeObjects(timeHash) {
     keys = Object.keys(timeHash);
@@ -130,6 +128,21 @@ function sortTimeObjects(timeObjects) {
     });
 }
 
+function setColor(timeHash) {
+    var arr = Object.keys(timeHash).map(function (key) { return timeHash[key]; });
+    maxValue = Math.max.apply( null, arr );
+    color = d3.scale.linear()
+    .domain([1, maxValue])
+    .range([
+        //"#80deea",
+        //"#006064"
+        //"#ffb94b",
+        //"#c07600"
+        "#ffd899",
+        "#fb9a00"
+    ]);
+}
+
 //d3
 
 var data = [];
@@ -147,27 +160,63 @@ var chart = d3.select("body")
 
 var radius = Math.min(width, height) / 2;
 
-var color = d3.scale.ordinal()
-.range(["#3399FF", "#5DAEF8", "#86C3FA", "#ADD6FB", "#D6EBFD"]);
+var color;
 
 var arc = d3.svg.arc()
 .outerRadius(radius)
-.innerRadius(radius - 50);
+.innerRadius(radius - 75)
+.cornerRadius(3);
 
 var pie = d3.layout.pie()
 .sort(null)
 .startAngle(1.1*Math.PI)
 .endAngle(3.1*Math.PI)
+.padAngle(0.03)
 .value(function(d) { return d.value; });
 
+var tip = d3.tip()
+.attr('class', 'd3-tip')
+.offset([-10, 0])
+.html(function(d) {
+    return "<strong>Commits:</strong> <span style='color:white'>" + d.data.value + "</span>";
+});
+
+chart.call(tip);
+
+/* For the drop shadow filter... */
+var defs = chart.append("defs");
+
+var filter = defs.append("filter")
+.attr("id", "dropshadow")
+
+filter.append("feGaussianBlur")
+.attr("in", "SourceAlpha")
+.attr("stdDeviation", 4)
+.attr("result", "blur");
+filter.append("feOffset")
+.attr("in", "blur")
+.attr("dx", 2)
+.attr("dy", 2)
+.attr("result", "offsetBlur");
+
+var feMerge = filter.append("feMerge");
+
+feMerge.append("feMergeNode")
+.attr("in", "offsetBlur")
+feMerge.append("feMergeNode")
+.attr("in", "SourceGraphic");
+
 function makeGraph() {
-    var g = chart.selectAll(".catHead")
+    var g = chart.selectAll(".graph")
     .data(pie(data))
     .enter().append("g")
-    .attr("class", "arc");
+    .attr("class", "arc")
+    .on('mouseover', tip.show)
+    .on('mouseout', tip.hide);
 
     g.append("path")
-    .style("fill", function(d) { return color(d.data.name); })
+    .style("fill", function(d) { return color(d.value); })
+    .attr("filter", "url(#dropshadow)")
     .transition().delay(function(d, i) { return i * 500; }).duration(500)
     .attrTween('d', function(d) {
         var i = d3.interpolate(d.startAngle+0.1, d.endAngle);
@@ -178,12 +227,15 @@ function makeGraph() {
     });
 
     g.append("text")
+    .attr("fill", "white")
     .transition().delay(function(d, i) { return i * 500; }).duration(500)
     .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
     .attr("dy", ".35em")
     .attr("class", "donut-text")
     .style("text-anchor", "middle")
+    .attr("fill", "white")
     .text(function(d) { return d.data.name; });
+
 }
 
 var humanTimes = [
@@ -212,4 +264,3 @@ var humanTimes = [
     "11PM",
     "12AM"
 ];
-
