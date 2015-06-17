@@ -10,7 +10,7 @@ commitCat.vm = (function() {
     var vm = {};
     vm.init = function() {
         vm.user = m.prop("apcera");
-        vm.repo = m.prop("gnatsd");
+        vm.repo = m.prop("kurma");
     };
     return vm;
 }());
@@ -25,7 +25,8 @@ commitCat.view = function() {
         m("head", [
             m("title", "CommitCat"),
             m("link[href='./public/css/materialize.css'][rel=stylesheet]"),
-            m("link[href='./public/css/styles.css'][rel=stylesheet]")
+            m("link[href='./public/css/octicons.css'][rel=stylesheet]"),
+            m("link[href='./public/css/styles.css'][rel=stylesheet]"),
         ]),
         m("body", {class: "cyan lighten-4"}, [
             m("div", {class: "container"},[
@@ -48,6 +49,12 @@ commitCat.view = function() {
                 ]),
             ]),
             m("div", {class: "graph center-align"}),
+            m("p", {id: "plug"}, [
+                m("span", "Made with "),
+                m("span", {class: "octicon octicon-heart"}),
+                m("span", " by "),
+                m("a", {href: "https://github.com/jgu2160/CommitCat", target: "_blank"}, "jgu"),
+            ])
         ])
     ]);
 };

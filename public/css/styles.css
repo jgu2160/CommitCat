@@ -16,6 +16,14 @@ body {
   color: white;
 }
 
+#plug {
+  color: white;
+  font-weight: bold;
+  position: absolute;
+  margin-left: 20px;
+  bottom: 0;
+}
+
 #title {
   color: white;
   font-weight: bold;
