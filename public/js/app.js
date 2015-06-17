@@ -9,8 +9,8 @@ commitCat.repo = function(data) {
 commitCat.vm = (function() {
     var vm = {};
     vm.init = function() {
-        vm.user = m.prop("apcera");
-        vm.repo = m.prop("kurma");
+        vm.user = m.prop("jgu2160");
+        vm.repo = m.prop("CommitCat");
     };
     return vm;
 }());
