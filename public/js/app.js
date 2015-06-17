@@ -2,10 +2,6 @@
 
 var commitCat = {};
 
-commitCat.repo = function(data) {
-    this.user = m.prop(data.description);
-};
-
 commitCat.vm = (function() {
     var vm = {};
     vm.init = function() {
@@ -135,8 +131,8 @@ function sortTimeObjects(timeObjects) {
 }
 
 function setColor(timeHash) {
-    var arr = Object.keys(timeHash).map(function (key) { return timeHash[key]; });
-    maxValue = Math.max.apply( null, arr );
+    var arr = Object.keys(timeHash).map(function(key) { return timeHash[key]; });
+    maxValue = Math.max.apply(null, arr);
     color = d3.scale.linear()
     .domain([1, maxValue])
     .range([
@@ -189,7 +185,7 @@ chart.call(tip);
 var defs = chart.append("defs");
 
 var filter = defs.append("filter")
-.attr("id", "dropshadow")
+.attr("id", "dropshadow");
 
 filter.append("feGaussianBlur")
 .attr("in", "SourceAlpha")
@@ -204,7 +200,7 @@ filter.append("feOffset")
 var feMerge = filter.append("feMerge");
 
 feMerge.append("feMergeNode")
-.attr("in", "offsetBlur")
+.attr("in", "offsetBlur");
 feMerge.append("feMergeNode")
 .attr("in", "SourceGraphic");
 
@@ -241,6 +237,7 @@ function makeGraph() {
 }
 
 var humanTimes = [
+    "12AM",
     "1AM",
     "2AM",
     "3AM",
@@ -263,6 +260,5 @@ var humanTimes = [
     "8PM",
     "9PM",
     "10PM",
-    "11PM",
-    "12AM"
+    "11PM"
 ];
