@@ -30,7 +30,7 @@ commitCat.view = function() {
         m("body", {class: "cyan lighten-4"}, [
             m("div", {id: "gradient"},[
                 m("h1", {class: "center-align", id:"title"}, "CommitCat"),
-                m("p", {class: "center-align", id:"blurb" }, "Timegraphing commits by hour")
+                m("p", {class: "center-align", id:"blurb" }, "Time-graphing commits by hour")
             ]),
             m("div", {id: "form", class: "cyan lighten-5 container z-depth-2 center-align"},[
                 m("form", [
