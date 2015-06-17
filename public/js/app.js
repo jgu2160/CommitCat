@@ -19,7 +19,6 @@ commitCat.controller = function() {
     commitCat.vm.init();
 };
 
-
 commitCat.view = function() {
     return m("html", [
         m("head", [
@@ -141,10 +140,6 @@ function setColor(timeHash) {
     color = d3.scale.linear()
     .domain([1, maxValue])
     .range([
-        //"#80deea",
-        //"#006064"
-        //"#ffb94b",
-        //"#c07600"
         "#ffd899",
         "#fb9a00"
     ]);
