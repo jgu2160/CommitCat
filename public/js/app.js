@@ -28,7 +28,7 @@ commitCat.view = function() {
             m("link[href='./public/css/styles.css'][rel=stylesheet]"),
         ]),
         m("body", {class: "cyan lighten-4"}, [
-            m("div", {class: "container"},[
+            m("div", {id: "gradient"},[
                 m("h1", {class: "center-align", id:"title"}, "CommitCat"),
                 m("p", {class: "center-align", id:"blurb" }, "Timegraphing repo commits by hour")
             ]),
