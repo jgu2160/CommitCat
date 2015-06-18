@@ -15,13 +15,18 @@ commitCat.controller = function() {
     commitCat.vm.init();
 };
 
+
 commitCat.view = function() {
+    var materialize_css = "link[href='./public/css/materialize.css'][rel=stylesheet]";
+    var octicons_css = "link[href='./public/css/octicons.css'][rel=stylesheet]";
+    var styles_css = "link[href='./public/css/styles.css'][rel=stylesheet]";
+
     return m("html", [
         m("head", [
             m("title", "CommitCat"),
-            m("link[href='./public/css/materialize.css'][rel=stylesheet]"),
-            m("link[href='./public/css/octicons.css'][rel=stylesheet]"),
-            m("link[href='./public/css/styles.css'][rel=stylesheet]"),
+            m(materialize_css),
+            m(octicons_css),
+            m(styles_css),
         ]),
         m("body", {class: "cyan lighten-4"}, [
             m("div", {id: "gradient"},[
