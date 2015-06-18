@@ -202,8 +202,8 @@ feMerge.append("feMergeNode")
 .attr("in", "SourceGraphic");
 
 function makeGraph() {
-    var maxValue = d3.max(data.map(function(timeObj) {
-        return timeObj.value;
+    var maxValue = d3.max(data, (function(d) {
+        return d.value;
     }));
 
     var color = d3.scale.linear()
