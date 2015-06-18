@@ -202,9 +202,9 @@ feMerge.append("feMergeNode")
 .attr("in", "SourceGraphic");
 
 function makeGraph() {
-    var maxValue = d3.max(data, (function(d) {
+    var maxValue = d3.max(data, function(d) {
         return d.value;
-    }));
+    });
 
     var color = d3.scale.linear()
     .domain([1, maxValue])
