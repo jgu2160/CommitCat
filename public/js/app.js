@@ -15,7 +15,6 @@ commitCat.controller = function() {
     commitCat.vm.init();
 };
 
-
 commitCat.view = function() {
     var materialize_css = "link[href='./public/css/materialize.css'][rel=stylesheet]";
     var octicons_css = "link[href='./public/css/octicons.css'][rel=stylesheet]";
@@ -37,11 +36,18 @@ commitCat.view = function() {
                 m("form", [
                     m("div", {class: "row"}, [
                         m("div", {class: "input-field"}, [
-                            m("input", {onchange: m.withAttr("value", commitCat.vm.user), placeholder: commitCat.vm.user(), type: "text", id: "username"}),
+                            m("input", {
+                                onchange: m.withAttr("value", commitCat.vm.user),
+                                placeholder: commitCat.vm.user(),
+                                type: "text",
+                                id: "username"}),
                             m("label", {for: "username"}, "Username"),
                         ]),
                     m("div", {class: "input-field"}, [
-                        m("input", {onchange: m.withAttr("value", commitCat.vm.repo), placeholder: commitCat.vm.repo(), type: "text", id: "repo"}),
+                        m("input", {
+                            onchange: m.withAttr("value", commitCat.vm.repo), placeholder: commitCat.vm.repo(),
+                            type: "text",
+                            id: "repo"}),
                         m("label", {for: "repo"}, "Repo"),
                     ]),
                     ]),
@@ -63,11 +69,15 @@ m.mount(document, {controller: commitCat.controller, view: commitCat.view});
 
 //my functions
 
-function filterNoCommits(arr) {
-    return arr.filter(function(a){
-        if (a[2] !== 0) {
-            return a;
-        }
+function getDataAndBuild() {
+    getGitData()
+    .then(function(success) {
+        success = filterNoCommits(success);
+        var timeHash = makeTimehash(success);
+        var timeObjects = makeTimeObjects(timeHash);
+        var sortedTimeObjects = sortTimeObjects(timeObjects);
+        data = timeObjects;
+        makeGraph();
     });
 }
 
@@ -85,16 +95,11 @@ function getGitData() {
     );
 }
 
-function getDataAndBuild() {
-    getGitData()
-    .then(function(success) {
-        success = filterNoCommits(success);
-        var timeHash = makeTimehash(success);
-        setColor(timeHash);
-        var timeObjects = makeTimeObjects(timeHash);
-        var sortedTimeObjects = sortTimeObjects(timeObjects);
-        data = timeObjects;
-        makeGraph();
+function filterNoCommits(arr) {
+    return arr.filter(function(a){
+        if (a[2] !== 0) {
+            return a;
+        }
     });
 }
 
@@ -110,8 +115,6 @@ function makeTimehash(timeArray) {
     });
     return timeHash;
 }
-
-var maxValue = 0;
 
 function makeTimeObjects(timeHash) {
     keys = Object.keys(timeHash);
@@ -133,17 +136,6 @@ function sortTimeObjects(timeObjects) {
         }
         return 0;
     });
-}
-
-function setColor(timeHash) {
-    var arr = Object.keys(timeHash).map(function(key) { return timeHash[key]; });
-    maxValue = Math.max.apply(null, arr);
-    color = d3.scale.linear()
-    .domain([1, maxValue])
-    .range([
-        "#ffd899",
-        "#fb9a00"
-    ]);
 }
 
 //d3
@@ -210,6 +202,18 @@ feMerge.append("feMergeNode")
 .attr("in", "SourceGraphic");
 
 function makeGraph() {
+    var maxValue = d3.max(data.map(function(timeObj) {
+        return timeObj.value;
+    }));
+    console.log(maxValue);
+
+    var color = d3.scale.linear()
+    .domain([1, maxValue])
+    .range([
+        "#ffd899",
+        "#fb9a00"
+    ]);
+
     var g = chart.selectAll(".graph")
     .data(pie(data))
     .enter().append("g")
