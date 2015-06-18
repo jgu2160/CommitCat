@@ -205,7 +205,6 @@ function makeGraph() {
     var maxValue = d3.max(data.map(function(timeObj) {
         return timeObj.value;
     }));
-    console.log(maxValue);
 
     var color = d3.scale.linear()
     .domain([1, maxValue])
