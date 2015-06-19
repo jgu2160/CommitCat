@@ -41,14 +41,14 @@ commitCat.view = function() {
                                 placeholder: commitCat.vm.user(),
                                 type: "text",
                                 id: "username"}),
-                            m("label", {for: "username"}, "Username"),
+                                m("label", {for: "username"}, "Username"),
                         ]),
                     m("div", {class: "input-field"}, [
                         m("input", {
                             onchange: m.withAttr("value", commitCat.vm.repo), placeholder: commitCat.vm.repo(),
                             type: "text",
                             id: "repo"}),
-                        m("label", {for: "repo"}, "Repo"),
+                            m("label", {for: "repo"}, "Repo"),
                     ]),
                     ]),
                     m("a", {onclick: getDataAndBuild, class: "cyan darken-1 waves-effect waves-light btn"}, "MEOW"),
@@ -155,7 +155,11 @@ var chart = d3.select("body")
 
 var radius = Math.min(width, height) / 2;
 
-var color;
+var color = d3.scale.linear()
+.range([
+    "#ffd899",
+    "#fb9a00"
+]);
 
 var arc = d3.svg.arc()
 .outerRadius(radius)
@@ -206,12 +210,7 @@ function makeGraph() {
         return d.value;
     });
 
-    var color = d3.scale.linear()
-    .domain([1, maxValue])
-    .range([
-        "#ffd899",
-        "#fb9a00"
-    ]);
+    color.domain([1, maxValue]);
 
     var g = chart.selectAll(".graph")
     .data(pie(data))
@@ -241,7 +240,6 @@ function makeGraph() {
     .style("text-anchor", "middle")
     .attr("fill", "white")
     .text(function(d) { return d.data.name; });
-
 }
 
 var humanTimes = [
