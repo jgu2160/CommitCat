@@ -16,9 +16,9 @@ commitCat.controller = function() {
 };
 
 commitCat.view = function() {
-    var materialize_css = "link[href='./public/css/materialize.css'][rel=stylesheet]";
-    var octicons_css = "link[href='./public/css/octicons.css'][rel=stylesheet]";
-    var styles_css = "link[href='./public/css/styles.css'][rel=stylesheet]";
+    var materialize_css = "link[href='./css/materialize.css'][rel=stylesheet]";
+    var octicons_css = "link[href='./css/octicons.css'][rel=stylesheet]";
+    var styles_css = "link[href='./css/styles.css'][rel=stylesheet]";
 
     return m("html", [
         m("head", [
